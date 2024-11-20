@@ -28,7 +28,7 @@ const FormElegirArea = () => {
     };
 
     return (
-        <form onSubmit={onSubmit} className="flex flex-col items-center border shadow-lg p-8 rounded-lg" style={{ maxWidth: '400px', margin: '50px auto', backgroundColor: '#F9F8F8f' }}>
+        <form onSubmit={onSubmit} className="flex flex-col items-center border shadow-lg p-8 rounded-lg" style={{ maxWidth: '400px', minWidth: '340px', margin: '50px auto', backgroundColor: '#F9F8F8f' }}>
             <h1 className="text-2xl font-bold mb-6 text-black">Elige el lugar del encargo</h1>
             
             <Select

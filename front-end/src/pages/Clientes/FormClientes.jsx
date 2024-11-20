@@ -131,6 +131,7 @@ export const FormClientes = () => {
         <div>
         <Forms>
             <h1 className="text-center my-2 mb-8 text-xl font-bold">Formulario Clientes</h1>
+            <hr color="black" size="8"/><br></br>
             <form className="grid grid-cols-1 md:grid-cols-2 gap-3 overflow-y-auto" onSubmit={handleSubmit}>
                 {inputs1.map(input => (
                     <div key={input.id}>

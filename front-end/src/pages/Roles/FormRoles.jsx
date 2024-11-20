@@ -49,7 +49,7 @@ export const FormRoles = () => {
     
     return (
         <Forms>
-            <h1 className="text-center my-2 mb-8 text-xl font-semibold">Formulario Roles</h1>
+            <h1 className="text-center my-2 mb-8 text-xl font-bold">Formulario Grupos</h1>
             <form className="grid grid-cols-1 md:grid-cols-2 gap-3" onSubmit={handleSubmit}>
                 {inputs1.map(input => (
                     <Input key={input.id} type={input.type} name={input.name} placeholder={input.placeholder} required={input.required} value={input.value} handleInputChange={handleInputChange} />

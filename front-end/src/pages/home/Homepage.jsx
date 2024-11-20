@@ -84,13 +84,14 @@ export const HomePage = () => {
       <section className="mt-6">
         <InputPrestamo/>
         <Card className="border-input">
-          <div className="max-h-[200px] max-w-[1000px] overflow-y-auto overflow-x-auto">
+          <div className="max-h-[200px] max-w-[2000px] overflow-y-auto overflow-x-auto">
           <Table>
           <TableHeader sx={{ color: 'white', textAlign: 'center' }}>
             <TableRow>
               <TableHead className="text-white text-center">Documento</TableHead>
               <TableHead className="text-white text-center">Usuario</TableHead>
               <TableHead className="text-white text-center">Elemento</TableHead>
+              <TableHead className="text-white text-center">Cantidad</TableHead>
               <TableHead className="text-white text-center">Acción</TableHead>
               <TableHead className="text-white text-center">Estado</TableHead>
             </TableRow>
@@ -111,6 +112,7 @@ export const HomePage = () => {
                           <TableCell>{prestamo.cliente_id}</TableCell>
                           <TableCell>{prestamo.cliente_nombre}</TableCell>
                           <TableCell>{prestamo.elemento_descripcion}</TableCell>
+                          <TableCell>{prestamo.cantidad}</TableCell>
                           <TableCell>{prestamo.accion}</TableCell>
                           <TableCell>{prestamo.estado}</TableCell>
                         </TableRow>

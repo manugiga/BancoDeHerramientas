@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { IoClose } from "react-icons/io5";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
 import useSearchElements from "../../hooks/useSearchElements";
 import usePostData from "../../hooks/usePostData.jsx";
@@ -9,6 +9,7 @@ import '../../assets/formAgregarEditarStyles.css';
 import { radioGroupClasses } from "@mui/material";
 
 export const FormAgregarEditarPrestamo = () => {
+    const navigate = useNavigate();
     const { idprestamo } = useParams();
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedItems, setSelectedItems] = useState([]);
@@ -427,6 +428,13 @@ export const FormAgregarEditarPrestamo = () => {
                         onClick={handleConsumoAll} // Cambiar la función
                     >
                         Consumir Todo
+                    </button>
+                    <button
+                        type="button"
+                        className="consume-button"
+                        onClick={()=>navigate("inicio")}
+                    >
+                        Cancelar 
                     </button>
                     {/* <button
                         type="button"

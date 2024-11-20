@@ -59,6 +59,10 @@ const addElements = async (req, res) => {
         for (let elemento of elementos) {
             const { idelemento, cantidad, observaciones } = elemento;
 
+            if (!observaciones || observaciones == '') {
+                return res.status(400).json({mensaje: 'Las observaciones son obligatorias para consumir un elemento'});
+            }
+
             if (cantidad <= 0) {
                 return res.status(400).json({ mensaje: `La cantidad no puede ser 0 ni menor que éste`});
             }

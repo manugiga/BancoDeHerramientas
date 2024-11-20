@@ -7,7 +7,7 @@ import ListComponent from '@/components/listas/ListComponent';
 const ListaEncargosCliente = () => {
     const { data, loading, errorData } = useGetData(['encargos']);
     const [encargos, setEncargos] = useState([]);
-    const [EncargosRechazados, setEncargosRechazados] = useState([]);
+    const [EncargosRechazados, setEncargosRechazados] = useState([]); console.log('hola',encargos)
 
     useEffect(() => {
         if (data?.encargos) {
@@ -82,10 +82,10 @@ const ListaEncargosCliente = () => {
         <div>
             <div>
                 <ListComponent
-                    data={encargos}
+                    data={encargos} 
                     columns={['Elemento', 'Cantidad', 'Observaciones', 'Fecha Reclamo', 'Lugar', '']}
                     renderRow={renderRow}
-                    searchKeys={['Elemento', 'Elemento.descripcion', 'cantidad', 'area_nombre', 'observaciones']}
+                    showSearch={false}  
                     title="Encargos Pendientes"
                 />
             </div>
@@ -94,7 +94,7 @@ const ListaEncargosCliente = () => {
                     data={data?.encargos.filter(encargo => encargo.estado === 'aceptado')}
                     columns={['Elemento', 'Cantidad', 'Observaciones', 'Fecha Reclamo', 'Lugar']}
                     renderRow={renderRowAceptados}
-                    searchKeys={['Elemento', 'Elemento.descripcion', 'cantidad', 'area_nombre', 'observaciones']}
+                    showSearch={false}  
                     title="Encargos Aceptados"
                 />
             </div>
@@ -103,12 +103,12 @@ const ListaEncargosCliente = () => {
                     data={EncargosRechazados}
                     columns={['Elemento', 'Cantidad', 'Observaciones', 'Lugar', '']}
                     renderRow={renderRowRechazados}
-                    searchKeys={['Elemento', 'Elemento.descripcion', 'cantidad', 'area_nombre', 'observaciones']}
+                    showSearch={false}   
                     title="Encargos Rechazados"
                 />
             </div>
         </div>
-    );
+    );  
 };
 
 export default ListaEncargosCliente;

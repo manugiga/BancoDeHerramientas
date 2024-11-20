@@ -124,7 +124,7 @@ export const FormElementos = () => {
         <Forms>
             <h1 className="text-center my-2 mb-8 text-xl font-bold">Formulario Elementos</h1>
             <hr color="black" size="8"/><br></br>
-            <form className="grid grid-cols-1 md:grid-cols-2 gap-3 overflow-y-auto max-h-[900px]" onSubmit={handleSubmit}>
+            <form className="grid grid-cols-1 md:grid-cols-2 gap-3 overflow-y-auto" onSubmit={handleSubmit}>
                 {inputs1.map(input => (
                     <div key={input.id}>
                         <Input
@@ -158,7 +158,7 @@ export const FormElementos = () => {
                         { value: "Agotado", label: "Agotado" },
                     ]}                
                 /><br></br>
-                <div className={inputs1.length % 2 === 0 ? "md:col-span-8" : "   display-flex mt-20"}>
+                <div className={inputs1.length % 2 === 0 ? "md:col-span-2" : "flex items-center justify-center mt-4"}>
                     <Button type={'submit'} name={'Enviar'} />
                 </div>
             </form>

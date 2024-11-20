@@ -9,7 +9,7 @@ import sequelize from '../db/connection.js';
 const obtenerHoraActual = () => ajustarHora(new Date());
 
 // CEDER ELEMENTOS EN UN PRESTAMO A OTRA PERSONA
-const cederElemento = async (area, adminId, idprestamo, idelemento, descripcion, documento, clienteNombre, cantidadCedido, observaciones) => {
+const cederElemento = async (area, adminId, idprestamo, idelemento, descripcion, documento, clienteNombre, cantidadCedido, observaciones, cedio) => {
     const cantidad = Number(cantidadCedido);
     const prestamo = await PrestamoCorriente.findOne({ where: { clientes_documento: documento }, });
     if (prestamo) {
@@ -47,7 +47,7 @@ const cederElemento = async (area, adminId, idprestamo, idelemento, descripcion,
             estado: 'actual'
         });
     }
-    createRecord(area,'prestamo', idprestamo, adminId, documento, clienteNombre, idelemento, descripcion, cantidad, observaciones, 'cedido', 'CEDER ELEMENTO');
+    createRecord(area,'prestamo', idprestamo, adminId, documento, clienteNombre, idelemento, descripcion, cantidad, observaciones, 'cedido', cedio+' CEDIÓ ELEMENTO A '+documento);
 };
 
 // CREAR UN PRESTAMO
@@ -284,6 +284,9 @@ const addOrUpdate = async (req, res) => {
                         }
                     } else if (estado == 'consumo') {
                         if (cantidadNueva != 0) {
+                            if (!observaciones || observaciones == '') {
+                                return res.status(400).json({mensaje: 'Las observaciones son obligatorias para consumir un elemento'});
+                            }
                             const consumo = await recordConsumption(cantidadNueva, observaciones, idelemento, prestamo.clientes_documento, area, adminId, 'co');
                             await Elemento.update(
                                 {
@@ -313,7 +316,7 @@ const addOrUpdate = async (req, res) => {
                             if (cantidadCedido > elementoEnPrestamo.cantidad || cantidadCedido + Number(cantidadd) > elementoEnPrestamo.cantidad) {
                                 return res.status(400).json({ mensaje: 'No se puede ceder una cantidad mayor a la prestada'});
                             }
-                            const cedidos = await cederElemento(area, adminId, idprestamo, idelemento, elementoEncontrado.descripcion, cedido, clienteNombre, cantidadCedido, observaciones);
+                            const cedidos = await cederElemento(area, adminId, idprestamo, idelemento, elementoEncontrado.descripcion, cedido, clienteNombre, cantidadCedido, observaciones, prestamo.clientes_documento);
                             await ElementoHasPrestamoCorriente.update(
                                 { cantidad: elementoEnPrestamo.cantidad - cantidadCedido - cantidadd },
                                 { where: {prestamoscorrientes_idprestamo: idprestamo, elementos_idelemento: idelemento },}

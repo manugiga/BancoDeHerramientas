@@ -327,6 +327,9 @@ const addOrUpdate = async (req, res) => {
                         }
                     } else if (estado == 'consumo') {
                         if (cantidadNueva != 0) {
+                            if (!observaciones || observaciones == '') {
+                                return res.status(400).json({mensaje: 'Las observaciones son obligatorias para consumir un elemento'});
+                            }
                             const consumo = await recordConsumption(cantidadNueva, observaciones, idelemento, prestamo.clientes_documento, area, adminId, 'es');
                             await Elemento.update(
                                 {
