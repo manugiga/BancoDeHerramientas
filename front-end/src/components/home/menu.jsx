@@ -29,7 +29,7 @@ export const Menu = ({ children }) => {
     const [openSubMenu, setOpenSubMenu] = useState(null);
     const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-console.log(Sena)
+
     const getTitle = () => {
         switch (role) {
             case 'admin':

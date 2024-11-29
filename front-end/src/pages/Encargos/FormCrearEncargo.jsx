@@ -3,38 +3,20 @@ import { IoClose } from "react-icons/io5";
 import { useNavigate, useParams } from "react-router-dom";
 import useSearchElements from "../../hooks/useSearchElementsInstructor";
 import usePostData from "../../hooks/usePostData";
+import useDeleteData from "../../hooks/useDeleteData";
 import axiosInstance from '../../helpers/axiosConfig.js';
 import '../../assets/formAgregarEditarStyles.css'; 
 
 export const FormCrearEncargo = () => {
     const navigate = useNavigate();
     const { idarea } = useParams();
-    const [areas, setAreas] = useState([]);
-    const areas_idarea = idarea; 
+    const { idencargo } = useParams();
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedItems, setSelectedItems] = useState([]);
-    const [numero, setNumber] = useState();
-    const [correo, setCorreo] = useState();
-    const [fecha_reclamo, setFecha] = useState();
+    const { deleteData, data: deleted, isLoading, error } = useDeleteData(`encargos/eliminar/${idencargo}`, '/encargos/elegirarea');
 
     const { data: searchResults = [], error: searchError, loading: searchLoading } = useSearchElements(searchTerm);
     const filteredResults = searchResults.filter((item) => item.areas_idarea == idarea);
-
-    useEffect(() => {
-        const fetchAreas = async () => {
-            try {
-                const response = await axiosInstance.get(`${import.meta.env.VITE_API_URL}/areas`); 
-                setAreas(response.data);
-            } catch (error) {
-                console.error("Error al obtener áreas:", error);
-            }
-        };
-
-        fetchAreas();
-    }, []);
-
-    // Buscar el área correspondiente
-    const areaEncontrada = areas.length > 0 ? areas.find(area => area.idarea === Number(areas_idarea)) : null;
 
     const handleSearchChange = (event) => {
         setSearchTerm(event.target.value);
@@ -53,10 +35,6 @@ export const FormCrearEncargo = () => {
             return [...prevItems, { ...item, cantidad: 1, cantidadd: 0, observaciones: "", cantidadbd: item.cantidad, checked: false }];
         });
     };    
-
-    const handleNumeroChange = (e) => setNumber(e.target.value); 
-    const handleCorreoChange = (e) => setCorreo(e.target.value); 
-    const handleFechaChange = (e) => setFecha(e.target.value); 
 
     const handleQuantityChange = (idelemento, quantity) => {
         setSelectedItems((prevItems) => 
@@ -88,7 +66,10 @@ export const FormCrearEncargo = () => {
         }
     };
 
-    const handleSave = usePostData(`encargos`, () => {}, { elementos, numero, areas_idarea, correo, fecha_reclamo }, {},`/encargos/lista`);
+    const handleDelete = () => {
+        deleteData();
+    };
+    const handleSave = usePostData(`encargos/elements`, () => {}, { elementos, idarea, idencargo }, {},`/encargos/lista`);
 
     return (
         <div className="form-container">
@@ -126,31 +107,6 @@ export const FormCrearEncargo = () => {
                 <div className="table-container overflow-y-auto overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200 ">
                         <thead>
-                            <tr style={{ backgroundColor: 'black' }}>
-                                <td colSpan="6" style={{ color: 'white' }}>
-                                    <label className="font-bold">Ingrese los siguientes datos para hacer el encargo</label>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colSpan="2">
-                                    <label> Lugar: {areaEncontrada ? areaEncontrada.nombre : "No encontrado"}</label>
-                                </td>
-                                <td colSpan="3">
-                                    <label> Correo: </label>
-                                    <input type="email" onChange={handleCorreoChange} value={correo} required />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colSpan="2">
-                                    <label> Fecha Reclamo: </label>
-                                    <input type="datetime-local" onChange={handleFechaChange} value={fecha_reclamo} required />
-                                </td>
-                                <td colSpan="3">
-                                    <label> Número: </label>
-                                    <input type="number" onChange={handleNumeroChange} value={numero} required />
-                                </td>
-                            </tr>
-                            <tr style={{ color: 'white' }}>.</tr>
                             <tr style={{ color: 'black' }}>
                                 <td colSpan="6" style={{ color: 'black' }}>
                                     <label className="font-bold">Indique las especificaciones de cada elemento</label>
@@ -217,7 +173,7 @@ export const FormCrearEncargo = () => {
                     <button
                         type="button"
                         className="consume-button"
-                        onClick={() => navigate("/encargos/lista")}
+                        onClick={handleDelete}
                     >
                         Cancelar                  
                     </button>

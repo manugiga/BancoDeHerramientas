@@ -7,7 +7,7 @@ import ListComponent from '@/components/listas/ListComponent';
 const ListaEncargosCliente = () => {
     const { data, loading, errorData } = useGetData(['encargos']);
     const [encargos, setEncargos] = useState([]);
-    const [EncargosRechazados, setEncargosRechazados] = useState([]); console.log('hola',encargos)
+    const [EncargosRechazados, setEncargosRechazados] = useState([]); 
 
     useEffect(() => {
         if (data?.encargos) {
@@ -74,6 +74,7 @@ const ListaEncargosCliente = () => {
             <td className="px-4 py-2">{encargo.cantidad}</td>
             <td className="px-4 py-2">{encargo.observaciones}</td>
             <td className="px-4 py-2">{encargo.area_nombre}</td>
+            <td className="px-4 py-2">{encargo.fecha_reclamo}</td>
             <td className="px-4 py-2"><button className="bg-black text-white px-2 py-1 rounded-md" onClick={() => handleDelete(encargo.encargos_idencargo, encargo.elementos_idelemento)}>Ok</button></td>
         </tr>
     );
@@ -101,7 +102,7 @@ const ListaEncargosCliente = () => {
             <div>
                 <ListComponent
                     data={EncargosRechazados}
-                    columns={['Elemento', 'Cantidad', 'Observaciones', 'Lugar', '']}
+                    columns={['Elemento', 'Cantidad', 'Observaciones', 'Fecha Reclamo', 'Lugar', '']}
                     renderRow={renderRowRechazados}
                     showSearch={false}   
                     title="Encargos Rechazados"

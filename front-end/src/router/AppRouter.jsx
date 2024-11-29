@@ -35,6 +35,7 @@ import { FormCrearTraspaso } from '@/pages/Traspasos/FormCrearTraspaso';
 import { FormRegistrarPrestamo_Es} from '../pages/Prestamos_Esp/FormRegistrarPrestamo_Es';
 import { FormElegirArea } from '@/pages/Encargos/FormElegirArea';
 import { FormCrearEncargo } from '@/pages/Encargos/FormCrearEncargo';
+import { Encargo } from '@/pages/Encargos/Encargo';
 import PrestamosEs from '@/pages/Prestamos_Esp/ListaPrestamosEs';
 import DetallePrestamoEs from '@/pages/Prestamos_Esp/DetallePrestamoEs';
 import ListaEncargosCliente from '@/pages/Encargos/ListaEncargosCliente';
@@ -338,7 +339,7 @@ export const AppRoutes = ({tokenSession}) => {
             )
         },
         {
-            path: '/encargos/elementos/:idarea',
+            path: '/encargos/elementos/:idarea/:idencargo',
             element: (
                 <ProtectedRoute allowedRoles={['instructor']}>
                     <FormCrearEncargo/>
@@ -358,6 +359,14 @@ export const AppRoutes = ({tokenSession}) => {
             element: (
                 <ProtectedRoute allowedRoles={['admin', 'contratista', 'practicante']}>
                     <ListaEncargosAdmin/>
+                </ProtectedRoute>
+            )
+        },
+        {
+            path: '/encargos/persona/:idencargo',
+            element: (
+                <ProtectedRoute allowedRoles={['admin', 'contratista', 'practicante']}>
+                    <Encargo/>
                 </ProtectedRoute>
             )
         },

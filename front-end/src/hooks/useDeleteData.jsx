@@ -33,6 +33,8 @@ const useDeleteData = (url, ruta) => {
 
             try {
                 const response = await axiosInstance.delete(`${import.meta.env.VITE_API_URL}/${url}`);
+                setData(response.data);
+
                 Swal.fire({
                     icon: 'success',
                     title: 'Eliminado Correctamente',
@@ -40,12 +42,12 @@ const useDeleteData = (url, ruta) => {
                     iconColor: 'black',
                     timer: 1500,
                     showConfirmButton: false
-                }).then(() => {
-                    setTimeout(() => {
-                        setData(response.data);
-                        navigate(ruta, { replace: true });
-                    }, 1500);           
-                }).then(()=> {location.reload();})
+                });
+
+                navigate(ruta, { replace: true });
+                setTimeout(() => {
+                    window.location.reload(); // Recargar la página
+                }, 100);
             } catch (error) {
                 setError(error.response ? error.response.data : 'Error de conexión');
                 const mensaje = error.response?.data?.mensaje || "Error inesperado";

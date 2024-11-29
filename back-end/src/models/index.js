@@ -256,9 +256,17 @@ foreignKey: 'elementos_idelemento',
 ElementoHasEncargo.belongsTo(Encargo, {
     foreignKey: 'encargos_idencargo',
 });
+
+Encargo.hasMany(ElementoHasEncargo, {
+    foreignKey: 'encargos_idencargo', // Clave foránea
+})
   
 ElementoHasEncargo.belongsTo(Elemento, {
 foreignKey: 'elementos_idelemento',
+});
+
+Elemento.hasMany(ElementoHasEncargo, {
+    foreignKey: 'elementos_idelemento', // Clave foránea
 });
 
 PrestamoCorriente.belongsTo(Cliente, {

@@ -12,14 +12,6 @@ Encargo.init({
         allowNull: false,
         autoIncrement: true
     },
-    correo: {
-        type: DataTypes.STRING(45),
-        allowNull: false
-    },
-    numero: {
-        type: DataTypes.STRING(45),
-        allowNull: false
-    },
     clientes_documento: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -49,6 +41,10 @@ Encargo.init({
     fecha_reclamo: {
         type: DataTypes.DATE,
         allowNull: false
+    },
+    contacto: {
+        type: DataTypes.STRING(50),
+        allowNull: true
     },
 }, {
     sequelize,
