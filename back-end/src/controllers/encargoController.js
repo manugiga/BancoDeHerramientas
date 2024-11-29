@@ -2,6 +2,7 @@ import { Op, Sequelize } from 'sequelize';
 import { Encargo, ElementoHasEncargo, Cliente, Elemento, Area, PrestamoCorriente, ElementoHasPrestamoCorriente, Rol } from '../models/index.js';
 import { ajustarHora, formatFecha } from './auth/adminsesionController.js';
 import { createRecord } from './historialController.js';
+import sequelize from '../db/connection.js';
 
 const obtenerHoraActual = () => ajustarHora(new Date());
 
@@ -62,34 +63,41 @@ const createEncargo = async (req, res) => {
 
 // Agregar los elementos al encargo
 const addElementsEncargo = async (req, res) => {
+    const errors = []; // Lista para acumular errores
+    const transaction = await sequelize.transaction(); // Crear una transacción
     try {
         const {id: clientes_documento } = req.user;
         const { idarea, idencargo, elementos } = req.body;
         // const { elementos } = req.body;
-        const clienteExists = await Cliente.findOne({where: {documento: clientes_documento}});
+        const clienteExists = await Cliente.findOne({where: {documento: clientes_documento}, transaction});
         if (!clienteExists) {
-            return res.status(400).json({ mensaje: 'La persona no se encuentra registrada'})
+            errors.push('La persona no se encuentra registrada');
         }
 
-        const encargo = await Encargo.findOne({where: {idencargo: idencargo}});
+        const encargo = await Encargo.findOne({where: {idencargo: idencargo}, transaction});
         if (!encargo) {
-            return res.status(400).json({mensaje: 'Encargo no encontrado'});
+            errors.push('Encargo no encontrado');
+        }
+
+        if (errors.length > 0) {
+            await transaction.rollback(); // Deshacer la transacción
+            return res.status(400).json({ errores: errors });
         }
 
         for (let elemento of elementos) {
             const { idelemento, cantidad, observaciones } = elemento;
 
-            const elementoEncontrado = await Elemento.findOne({ where: { idelemento, areas_idarea: idarea }});
+            const elementoEncontrado = await Elemento.findOne({ where: { idelemento, areas_idarea: idarea }, transaction});
             if (!elementoEncontrado) {
-                await Encargo.destroy({where: {idencargo: idencargo}});
-                return res.status(404).json({ mensaje: `Elemento no encontrado en el inventario` });
+                errors.push(`Elemento con ID ${idelemento} no encontrado en el inventario`);
+                continue;
             }
 
             let dispoTotal = elementoEncontrado.cantidad - elementoEncontrado.minimo;       
 
-            const existeEncargo = await ElementoHasEncargo.findOne({where: {elementos_idelemento: idelemento, estado: 'aceptado'}});
+            const existeEncargo = await ElementoHasEncargo.findOne({where: {elementos_idelemento: idelemento, estado: 'aceptado'}, transaction});
             if (existeEncargo) {
-                const existeEncargoMismaFecha = await Encargo.findOne({where:{idencargo: existeEncargo.encargos_idencargo, fecha_reclamo: encargo.fecha_reclamo}});
+                const existeEncargoMismaFecha = await Encargo.findOne({where:{idencargo: existeEncargo.encargos_idencargo, fecha_reclamo: encargo.fecha_reclamo}, transaction});
                 if (existeEncargoMismaFecha) {
                     dispoTotal = elementoEncontrado.cantidad - elementoEncontrado.minimo - existeEncargo.cantidad;
                 } else {
@@ -98,11 +106,13 @@ const addElementsEncargo = async (req, res) => {
             }
 
             if (cantidad <= 0) {
-                return res.status(400).json({ mensaje: `La cantidad de préstamo no puede ser 0 ni menor que éste`});
+                errors.push(`La cantidad de préstamo para el elemento ${elementoEncontrado.descripcion} no puede ser 0 ni menor que éste`);
+                continue;
             }
 
             if (dispoTotal < cantidad) {
-                return res.status(400).json({ mensaje: `Cierta cantidad del elemento ${elementoEncontrado.descripcion} ha sido encargada por otro instructor para la misma fecha y hora antes que tú, te queda un total máximo de ${dispoTotal} para encargar.` });
+                errors.push(`Del elemento ${elementoEncontrado.descripcion} queda un total máximo de ${dispoTotal} para encargar`);
+                continue;
             }
 
             // const elementoYaEncargado = await ElementoHasEncargo.findOne({where: {encargos_idencargo: idencargo, elementos_idelemento: idelemento}});
@@ -119,13 +129,21 @@ const addElementsEncargo = async (req, res) => {
                 cantidad,
                 observaciones,
                 estado: 'pendiente'
-            });           
+            }, { transaction });           
         }
 
-        return res.status(200).json({ mensaje: 'Elementos encargados con éxito' })
+        if (errors.length > 0) {
+            await transaction.rollback(); // Deshacer la transacción si hay errores
+            return res.status(400).json({ mensaje: errors });
+        }
+
+        await transaction.commit(); // Confirmar la transacción si no hay errores
+        return res.status(200).json({ mensaje: 'Elementos encargados con éxito' });
+
     } catch (error) {
-        console.log(error)
-        res.status(500).json({ mensaje: 'Error al cargar elementos al encargo, por favor vuelva a intentarlo'});
+        await transaction.rollback(); // Deshacer la transacción en caso de excepción
+        console.error(error);
+        return res.status(500).json({ mensaje: 'Error al cargar elementos al encargo, por favor vuelva a intentarlo' });
     }
 };
 
